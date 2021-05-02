@@ -3,6 +3,7 @@
 
 
 import os
+import argparse
 import decimal
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
@@ -43,8 +44,19 @@ def pdf_merge(path_out, pdfs):
         os.remove(pdf)
 
 if __name__ == '__main__':
-    path_in = 'in.pdf'
-    path_out = 'out.pdf'
+    parser = argparse.ArgumentParser(description="Splits pdf pages into multiple pages with overlap for better presentation on ebook readers and similar devices")
+    parser.add_argument('--usage', action='store_true')
+    parser.add_argument('-i', '--input', default="in.pdf")
+    parser.add_argument('-o', '--output', default="out.pdf")
+
+    args = parser.parse_args()
+
+    if args.usage:
+        parser.print_usage()
+        exit(0)
+
+    path_in = args.input
+    path_out = args.output
     pdf_splits = []
     splits = [(decimal.Decimal('0'), decimal.Decimal('0.52')), (decimal.Decimal('0.48'), decimal.Decimal('1'))]
     for diff in splits:
