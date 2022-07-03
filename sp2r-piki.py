@@ -149,9 +149,13 @@ def generate_split_pdf(pdf_in, splits):
             outline_print_children(outlineItem, pdf_in, 0)
             outline_dst.append(outline_parse_children(outlineItem, pdf_in, pdf_out, 0))
             # outline_dst.append(outlineItem)
+        print("*****************************************************************************")
         with pdf_out.open_outline() as outline_out:
             outline_out.root.extend(outline_dst)
-        # migrate_named_destinations(pdf_in, pdf_out, splits)
+        migrate_named_destinations(pdf_in, pdf_out, splits)
+        with pdf_out.open_outline() as outline_out:
+            for outlineItem in outline_in.root:
+                outline_print_children(outlineItem, pdf_out, 0)
     return pdf_out
 
 
