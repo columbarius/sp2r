@@ -7,6 +7,8 @@ import argparse
 import decimal
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
+
+
 def pdf_splitter(path_in, i, j):
     fname = os.path.splitext(os.path.basename(path_in))[0]
 
@@ -28,20 +30,41 @@ def pdf_splitter(path_in, i, j):
     pdf_writer.write(out)
     return path_out
 
-def pdf_merge(path_out, pdfs):
+def show_tree(bookmark_list, pdf_in, indent=0):
+    for item in bookmark_list:
+        if isinstance(item, list):
+            # recursive call with increased indentation
+            show_tree(item, pdf_in, indent + 4)
+        else:
+            print(" " * indent + item.title)
+            print(" " * indent + str(pdf_in.getDestinationPageNumber(item)))
+            print(" " * indent + str(item.top))
+            print(" " * indent + str(item.bottom))
+            print(" " * indent + str(item.left))
+            print(" " * indent + str(item.right))
+
+def merge_bookmarks(pdf_in, pdf_out):
+    show_tree(pdf_in.getOutlines(), pdf_in)
+
+
+def pdf_merge(path_in, path_out, pdfs):
     pdf_list = []
     for pdf in pdfs:
         pdf_list.append(PdfFileReader(pdf))
     pdf_writer = PdfFileWriter()
+    pdf_orig = PdfFileReader(path_in)
 
     for page_num in range(pdf_list[0].getNumPages()):
         for pdf in pdf_list:
             pdf_writer.addPage(pdf.getPage(page_num))
 
+    merge_bookmarks(pdf_orig, pdf_writer)
+
     out = open(path_out, 'wb')
     pdf_writer.write(out)
     for pdf in pdfs:
         os.remove(pdf)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Splits pdf pages into multiple pages with overlap for better presentation on ebook readers and similar devices")
@@ -61,4 +84,4 @@ if __name__ == '__main__':
     splits = [(decimal.Decimal('0'), decimal.Decimal('0.52')), (decimal.Decimal('0.48'), decimal.Decimal('1'))]
     for diff in splits:
         pdf_splits.append(pdf_splitter(path_in, diff[0], diff[1]))
-    pdf_merge(path_out, pdf_splits)
+    pdf_merge(path_in, path_out, pdf_splits)
