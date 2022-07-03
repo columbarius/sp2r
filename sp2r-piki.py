@@ -61,7 +61,7 @@ def outline_print_children(outlineItem, pdf, indent):
     # help(dict)
     # print(dict.keys())
     # help(dict[Name.A].keys())
-    # print(indent*" " + str(dict[Name.A].keys()) + ":" + "A=" + str(dict[Name.A][Name.S]) + "B=" + str(dict[Name.A][Name.D]))
+    print(indent*" " + str(dict[Name.A].keys()) + ":" + "A=" + str(dict[Name.A][Name.S]) + "B=" + str(dict[Name.A][Name.D]))
     # print(type(dict[Name.A][Name.D]))
     # os.abort()
     # print(indent*" " + str(vars(outlineItem.action)))
@@ -146,6 +146,7 @@ def generate_split_pdf(pdf_in, splits):
     with pdf_in.open_outline() as outline_in:
         outline_dst = []
         for outlineItem in outline_in.root:
+            outline_print_children(outlineItem, pdf_in, 0)
             outline_dst.append(outline_parse_children(outlineItem, pdf_in, pdf_out, 0))
             # outline_dst.append(outlineItem)
         with pdf_out.open_outline() as outline_out:
